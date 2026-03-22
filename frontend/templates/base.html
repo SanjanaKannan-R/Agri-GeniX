@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ language_code }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#143f3a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Agri Genix">
+    <title>{{ ui.brand_name }}</title>
+    <link rel="icon" href="{% static 'core/images/agrigenix-logo.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'core/images/agrigenix-logo.svg' %}">
+    <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
+    <link rel="stylesheet" href="{% static 'core/styles.css' %}">
+</head>
+<body
+    data-language="{{ language_code }}"
+    data-role="{% if request.user.is_authenticated %}{{ request.user.role }}{% endif %}"
+    data-route-home="{{ portal_home }}"
+    data-route-login="{% url 'login' %}"
+    data-route-dashboard="{{ portal_home }}"
+    data-route-marketplace="{% url 'marketplace' %}"
+    data-route-storage="{% url 'storage' %}"
+    data-route-logout="{% url 'logout' %}"
+    data-route-language-en="{% url 'set-language' 'en' %}?next={{ request.get_full_path|urlencode }}"
+    data-route-language-ta="{% url 'set-language' 'ta' %}?next={{ request.get_full_path|urlencode }}"
+    data-route-portal-home="{% url 'portal-home' %}"
+    data-route-portal-farmer="{% url 'farmer-portal' %}"
+    data-route-portal-buyer="{% url 'buyer-portal' %}"
+    data-route-portal-warehouse="{% url 'warehouse-portal' %}"
+>
+    <div class="app-splash" data-app-splash>
+        <div class="splash-card">
+            <strong>Agri Genix</strong>
+            <span>Preparing workspace...</span>
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <header class="app-header app-header-redesign">
+            <div class="brand-wrap app-topbar">
+                <div class="brand-cluster">
+                    <div>
+                        <a class="brand" href="{{ portal_home }}">{{ ui.brand_name }}</a>
+                        <p class="tagline">{{ ui.tagline }}</p>
+                    </div>
+                </div>
+                <div class="header-rail">
+                    <div class="language-switch" role="group" aria-label="Language Selection">
+                        <a class="{% if language_code == 'en' %}active{% endif %}" href="{% url 'set-language' 'en' %}?next={{ request.get_full_path|urlencode }}">EN</a>
+                        <a class="{% if language_code == 'ta' %}active{% endif %}" href="{% url 'set-language' 'ta' %}?next={{ request.get_full_path|urlencode }}">TA</a>
+                    </div>
+                    {% if request.user.is_authenticated %}
+                        <a class="header-link" href="{% url 'notifications' %}">Notifications</a>
+                    {% else %}
+                        <a class="header-link" href="{% url 'portal-home' %}">Portal Home</a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </header>
+
+        {% if messages %}
+            <section class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <main class="page">
+            {% block content %}{% endblock %}
+        </main>
+
+        {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'role-login' and request.resolver_match.url_name != 'verify-otp' %}
+            <nav class="bottom-nav" aria-label="Primary">
+                {% if request.user.is_authenticated and request.user.role == 'farmer' %}
+                    <a class="{% if request.resolver_match.url_name == 'farmer-portal' %}active{% endif %}" href="{% url 'farmer-portal' %}"><span>Home</span><small>Farmer</small></a>
+                    <a class="{% if request.resolver_match.url_name == 'add-crop' or request.resolver_match.url_name == 'edit-crop' %}active{% endif %}" href="{% url 'add-crop' %}"><span>Post</span><small>Crops</small></a>
+                    <a class="{% if request.resolver_match.url_name == 'farmer-storage-dashboard' or request.resolver_match.url_name == 'book-warehouse' or request.resolver_match.url_name == 'storage' %}active{% endif %}" href="{% url 'farmer-storage-dashboard' %}"><span>Storage</span><small>Slots</small></a>
+                    <a href="{% url 'logout' %}"><span>Exit</span><small>{{ ui.logout }}</small></a>
+                {% elif request.user.is_authenticated and request.user.role == 'buyer' %}
+                    <a class="{% if request.resolver_match.url_name == 'buyer-portal' %}active{% endif %}" href="{% url 'buyer-portal' %}"><span>Home</span><small>Buyer</small></a>
+                    <a class="{% if request.resolver_match.url_name == 'buyer-market-dashboard' or request.resolver_match.url_name == 'marketplace' or request.resolver_match.url_name == 'buy-crop' %}active{% endif %}" href="{% url 'buyer-market-dashboard' %}"><span>Market</span><small>Buy</small></a>
+                    <a class="{% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}"><span>Alerts</span><small>Inbox</small></a>
+                    <a href="{% url 'logout' %}"><span>Exit</span><small>{{ ui.logout }}</small></a>
+                {% elif request.user.is_authenticated and request.user.role == 'warehouse_owner' %}
+                    <a class="{% if request.resolver_match.url_name == 'warehouse-portal' %}active{% endif %}" href="{% url 'warehouse-portal' %}"><span>Home</span><small>Owner</small></a>
+                    <a class="{% if request.resolver_match.url_name == 'warehouse-bookings-dashboard' or request.resolver_match.url_name == 'add-warehouse' or request.resolver_match.url_name == 'edit-warehouse' %}active{% endif %}" href="{% url 'warehouse-bookings-dashboard' %}"><span>Data</span><small>Warehouse</small></a>
+                    <a class="{% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}"><span>Alerts</span><small>Inbox</small></a>
+                    <a href="{% url 'logout' %}"><span>Exit</span><small>{{ ui.logout }}</small></a>
+                {% else %}
+                    <a class="{% if request.resolver_match.url_name == 'portal-home' or request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'login' %}"><span>Login</span><small>Start</small></a>
+                {% endif %}
+            </nav>
+        {% endif %}
+    </div>
+
+    {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'role-login' and request.resolver_match.url_name != 'verify-otp' %}
+        <section class="voice-dock" data-voice-dock>
+            <div class="voice-dock-copy">
+                <strong>Voice Guide</strong>
+                <span data-voice-status>Voice ready</span>
+            </div>
+            <div class="voice-dock-actions">
+                <button class="voice-fab" type="button" data-voice-nav>Voice Nav</button>
+                <button class="button secondary voice-action" type="button" data-voice-help>Help</button>
+            </div>
+        </section>
+    {% endif %}
+
+    <script src="{% static 'core/app.js' %}"></script>
+</body>
+</html>
