@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card dashboard-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Buyer Workspace</span>
+            <h1>Buyer Portal</h1>
+            <p>Track available crops, compare farmer listings, and move faster on purchase decisions.</p>
+            <div class="actions">
+                <a class="button" href="{% url 'buyer-market-dashboard' %}">Browse Listings</a>
+                <a class="button secondary" href="{% url 'notifications' %}">Notifications</a>
+            </div>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="/static/core/images/banana.svg" alt="">
+            <img src="/static/core/images/tomato.svg" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="stat-grid dashboard-kpis">
+    <article class="card mini-stat">
+        <span class="muted">Active Crop Listings</span>
+        <strong>{{ active_crops_count }}</strong>
+        <span>Farmer listings available to review</span>
+    </article>
+    <article class="card mini-stat">
+        <span class="muted">Your Buy Requests</span>
+        <strong>{{ purchase_count }}</strong>
+        <span>Requests already submitted</span>
+    </article>
+    <article class="card mini-stat">
+        <span class="muted">Warehouses Nearby</span>
+        <strong>{{ nearby_warehouses_count }}</strong>
+        <span>Connected storage network</span>
+    </article>
+</section>
+
+<section class="card dashboard-panel">
+    <div class="section-title">
+        <h2>Quick Actions</h2>
+    </div>
+    <div class="actions">
+        <a class="button block" href="{% url 'buyer-market-dashboard' %}">Browse All Listings</a>
+        <a class="button secondary block" href="{% url 'notifications' %}">Open Notifications</a>
+    </div>
+</section>
+{% endblock %}

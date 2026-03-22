@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card">
+    <span class="eyebrow">{{ ui.storage }}</span>
+    <h1>Warehouse Directory</h1>
+    <p>Browse warehouse records in a clear layout with 10 results per page.</p>
+</section>
+
+<section class="card form-card">
+    <form method="get">
+        <div class="grid two">
+            <div>
+                <label for="id_q">Search Warehouse</label>
+                <input id="id_q" type="text" name="q" value="{{ search_query }}" placeholder="District, warehouse name, address, commodity">
+            </div>
+            <div>
+                <label>Rows</label>
+                <input type="text" value="10 per page" readonly>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="button" type="submit">Apply Search</button>
+            <a class="button secondary" href="{% url 'storage' %}">Reset</a>
+        </div>
+    </form>
+</section>
+
+<section class="card">
+    <div class="section-title">
+        <h2>Directory Summary</h2>
+    </div>
+    <div class="info-strip compact-strip">
+        <div>
+            <strong>Total Warehouses</strong>
+            <p class="muted">{{ total_warehouses }}</p>
+        </div>
+        <div>
+            <strong>Current Page</strong>
+            <p class="muted">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+        </div>
+        <div>
+            <strong>Rows Per Page</strong>
+            <p class="muted">10</p>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="section-title">
+        <h2>Warehouse List</h2>
+        <span class="muted">Showing 10 warehouses per page</span>
+    </div>
+
+    {% if warehouses %}
+        <div class="grid two">
+            {% for warehouse in warehouses %}
+                <article class="list-card large crop-showcase compact-list-card warehouse-card">
+                    <img class="thumb" src="{% if warehouse.image %}{{ warehouse.image.url }}{% else %}https://commons.wikimedia.org/wiki/Special:Redirect/file/Warehouse%20Building.jpg{% endif %}" alt="Warehouse" onerror="this.onerror=null;this.src='https://commons.wikimedia.org/wiki/Special:Redirect/file/Warehouse%20Building.jpg';">
+                    <strong>{% if language_code == "ta" %}{{ warehouse.name_ta|default:warehouse.name_en }}{% else %}{{ warehouse.name_en }}{% endif %}</strong>
+                    <span class="tamil-helper">{{ warehouse.scheme_name|default:"Warehouse" }}</span>
+                    <div class="meta-row">
+                        <span>{% if language_code == "ta" %}{{ warehouse.district_ta|default:warehouse.district }}{% else %}{{ warehouse.district }}{% endif %}</span>
+                        <span>{{ warehouse.available_tons }} / {{ warehouse.capacity_tons }} tons free</span>
+                    </div>
+                    {% if warehouse.address_text %}
+                        <p>{{ warehouse.address_text }}</p>
+                    {% endif %}
+                    {% if warehouse.commodity_details %}
+                        <span class="muted">{{ warehouse.commodity_details }}</span>
+                    {% endif %}
+                    {% if warehouse.contact_number %}
+                        <span class="muted">{{ warehouse.contact_number }}</span>
+                    {% endif %}
+                    {% if request.user.is_authenticated and request.user.role == "farmer" %}
+                        <a class="button secondary compact-button" href="{% url 'book-warehouse' warehouse.id %}">
+                            {% if language_code == "ta" %}Slot Booking{% else %}Book Slot{% endif %}
+                        </a>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination-bar">
+                {% if page_obj.has_previous %}
+                    <a class="button secondary" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">Previous</a>
+                {% endif %}
+                <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a class="button secondary" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="empty-state">No warehouses available for the current search.</p>
+    {% endif %}
+</section>
+{% endblock %}

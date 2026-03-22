@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews - Agri Genix{% endblock %}
+
+{% block content %}
+<section class="card hero-card detail-hero">
+    <span class="eyebrow">Reviews</span>
+    <h1>{{ target_name }}</h1>
+    <p class="muted"><strong>{{ average_rating }}/5</strong> based on {{ review_count }} reviews.</p>
+</section>
+
+<section class="card dashboard-panel">
+    {% if reviews %}
+        <div class="grid two">
+            {% for review in reviews %}
+                <article class="list-card compact-list-card">
+                    <div class="section-title">
+                        <h2>{{ review.title }}</h2>
+                        <span class="badge">{{ review.rating }}/5</span>
+                    </div>
+                    <span class="muted">By {{ review.reviewer.get_full_name|default:review.reviewer.phone }}</span>
+                    {% if review.comment %}
+                        <p>{{ review.comment }}</p>
+                    {% endif %}
+                    <span class="muted">{{ review.created_at|date:"M d, Y" }}</span>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">No reviews yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

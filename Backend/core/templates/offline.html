@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card launch-hero">
+    <span class="eyebrow">Offline</span>
+    <h1>Agri Genix is offline right now</h1>
+    <p>Your device has no internet connection. You can reopen saved screens after the connection comes back.</p>
+    <div class="actions">
+        <a class="button" href="{% url 'login' %}">Try Again</a>
+    </div>
+</section>
+
+<section class="card impact-card">
+    <div class="section-title">
+        <h2>Saved Experience</h2>
+    </div>
+    <div class="check-grid">
+        <div class="check-item">The app shell stays installed like a real mobile app.</div>
+        <div class="check-item">Core styles, logo, and login screen are cached for quick reopening.</div>
+        <div class="check-item">Live market and storage data resume when the internet returns.</div>
+        <div class="check-item">Your last-used pages can reopen faster after reconnecting.</div>
+    </div>
+</section>
+{% endblock %}

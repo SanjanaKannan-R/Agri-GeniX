@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card detail-hero">
+    <span class="eyebrow">Warehouse</span>
+    <h1>Book Warehouse</h1>
+    <p>{{ warehouse.name_en }} - {{ warehouse.district }}</p>
+    <div class="grid two">
+        <article class="list-card large crop-showcase compact-list-card">
+            <strong>Warehouse Details</strong>
+            <span class="tamil-helper">{{ warehouse.scheme_name|default:"Warehouse" }}</span>
+            <div class="meta-row">
+                <span>{{ warehouse.available_tons }} / {{ warehouse.capacity_tons }} tons</span>
+                <span>{{ warehouse.district }}</span>
+            </div>
+            {% if warehouse.address_text %}
+                <p>{{ warehouse.address_text }}</p>
+            {% endif %}
+            {% if warehouse.commodity_details %}
+                <span class="muted">{{ warehouse.commodity_details }}</span>
+            {% endif %}
+            {% if warehouse.contact_number %}
+                <span class="muted">{{ warehouse.contact_number }}</span>
+            {% endif %}
+        </article>
+        <article class="card dashboard-panel">
+            <div class="section-title">
+                <h2>Booking Summary</h2>
+            </div>
+            <div class="info-strip compact-strip">
+                <div>
+                    <strong>Available Capacity</strong>
+                    <p class="muted">{{ warehouse.available_tons }} / {{ warehouse.capacity_tons }} tons</p>
+                </div>
+                <div>
+                    <strong>Per Slot Limit</strong>
+                    <p class="muted">{{ slot_capacity_limit|floatformat:2 }} tons</p>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<section class="card form-card detail-form-card">
+    <div class="section-title">
+        <h2>Enter Booking Details</h2>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="button block" type="submit">Confirm Booking</button>
+    </form>
+</section>
+{% endblock %}

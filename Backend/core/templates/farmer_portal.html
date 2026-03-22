@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card dashboard-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Farmer Workspace</span>
+            <h1>Farmer Portal</h1>
+            <p>Manage crop listings, storage bookings, and buyer activity from one organized dashboard.</p>
+            <div class="actions">
+                <a class="button" href="{% url 'add-crop' %}">Add Crop</a>
+                <a class="button secondary" href="{% url 'farmer-storage-dashboard' %}">Book Warehouse</a>
+                <a class="button secondary" href="{% url 'request-ivr-support' %}">Request IVR Call</a>
+            </div>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="/static/core/images/farmer.svg" alt="">
+            <img src="/static/core/images/paddy.svg" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="stat-grid dashboard-kpis">
+    <article class="card mini-stat">
+        <span class="muted">Crop Listings</span>
+        <strong>{{ listings_count }}</strong>
+        <span>Listings currently managed by you</span>
+    </article>
+    <article class="card mini-stat">
+        <span class="muted">Warehouse Bookings</span>
+        <strong>{{ bookings_count }}</strong>
+        <span>Confirmed storage slots</span>
+    </article>
+    <article class="card mini-stat">
+        <span class="muted">Buyer Requests</span>
+        <strong>{{ buyer_requests_count }}</strong>
+        <span>Incoming interest from buyers</span>
+    </article>
+</section>
+
+<section class="grid two">
+    <div class="card dashboard-panel">
+        <div class="section-title">
+            <h2>Quick Actions</h2>
+        </div>
+        <div class="actions">
+            <a class="button block" href="{% url 'farmer-market-dashboard' %}">Open Market Dashboard</a>
+            <a class="button secondary block" href="{% url 'farmer-bookings-dashboard' %}">My Bookings</a>
+            <a class="button secondary block" href="{% url 'notifications' %}">Notifications</a>
+        </div>
+    </div>
+
+    <div class="card dashboard-panel">
+        <div class="section-title">
+            <h2>Recent Updates</h2>
+        </div>
+        {% if recent_notifications %}
+            <div class="grid">
+                {% for notification in recent_notifications %}
+                    <div class="list-card compact-list-card">
+                        <strong>{{ notification.title }}</strong>
+                        <p>{{ notification.message|truncatewords:16 }}</p>
+                        <span class="muted">{{ notification.created_at|date:"d M Y h:i A" }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-state">No recent notifications yet.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="login-layout">
+    <div class="login-card-wrap">
+        <section class="card hero-card login-card simple-login-card">
+            <span class="eyebrow">OTP</span>
+            <h1>Verify</h1>
+            <p class="muted">{{ identifier }}</p>
+            <form method="post" class="form-card login-form-card">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="button block simple-login-button" type="submit">Verify</button>
+            </form>
+        </section>
+    </div>
+</section>
+{% endblock %}

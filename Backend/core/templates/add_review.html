@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Add Review - Agri Genix{% endblock %}
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">
+                        {% if reviewed_user %}
+                            Share Your Review for {{ reviewed_user.get_full_name|default:reviewed_user.phone }}
+                        {% elif warehouse %}
+                            Rate Your Experience with {{ warehouse.name_en }}
+                        {% endif %}
+                    </h2>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.rating.id_for_label }}" class="form-label">Rating</label>
+                            <div class="btn-group d-flex" role="group">
+                                {% for value, label in form.rating.field.choices %}
+                                    <input type="radio" class="btn-check" name="rating" id="rating_{{ value }}" value="{{ value }}" required>
+                                    <label class="btn btn-outline-warning flex-grow-1" for="rating_{{ value }}">
+                                        {% for i in "12345" %}
+                                            {% if i|add:0 <= value|add:0 %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            {% if form.rating.errors %}
+                                <div class="invalid-feedback d-block">{{ form.rating.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.comment.id_for_label }}" class="form-label">{{ form.comment.label }}</label>
+                            {{ form.comment }}
+                            {% if form.comment.errors %}
+                                <div class="text-danger small">{{ form.comment.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">Submit Review</button>
+                            <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="radio"]:checked + .btn {
+        background-color: #ffc107;
+        color: #000;
+    }
+</style>
+{% endblock %}

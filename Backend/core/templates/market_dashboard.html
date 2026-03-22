@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card">
+    <span class="eyebrow">Market</span>
+    <h1>Commodity List</h1>
+    <p>Browse commodities and open any item to review prices by market or location.</p>
+</section>
+
+<section class="card form-card">
+    <form method="get">
+        <div class="grid two">
+            <div>
+                <label for="id_q">Search Commodity</label>
+                <input id="id_q" type="text" name="q" value="{{ search_query }}" placeholder="Tomato, Paddy, Groundnut">
+            </div>
+            <div>
+                <label for="id_location">Filter by Place</label>
+                <input id="id_location" type="text" name="location" value="{{ location_filter }}" placeholder="District or area">
+            </div>
+            <div>
+                <label>Rows</label>
+                <input type="text" value="10 per page" readonly>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="button" type="submit">Apply Filters</button>
+            <a class="button secondary" href="{% url 'market-dashboard' %}">Reset</a>
+        </div>
+    </form>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <div class="section-title">
+            <h2>Commodity Summary</h2>
+        </div>
+        <div class="info-strip">
+            <div>
+                <strong>Total Commodities</strong>
+                <p class="muted">{{ total_commodities }}</p>
+            </div>
+            <div>
+                <strong>Total Market Rows</strong>
+                <p class="muted">{{ total_market_rows }}</p>
+            </div>
+            <div>
+                <strong>Rows Per Page</strong>
+                <p class="muted">10</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">
+            <h2>Navigation</h2>
+        </div>
+        <div class="info-strip">
+            <div>
+                <strong>Open a Commodity</strong>
+                <p class="muted">Open any commodity to review all available price rows.</p>
+            </div>
+            <div>
+                <strong>Pagination</strong>
+                <p class="muted">Commodity list and detail pages each show 10 rows per page.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="section-title">
+        <h2>Market Commodity List</h2>
+        <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    </div>
+
+    {% if commodity_cards %}
+        <div class="grid two">
+            {% for item in commodity_cards %}
+                <a class="list-card large crop-card" href="{% url 'market-commodity-detail' item.name %}?list_page={{ page_obj.number }}{% if location_filter %}&location={{ location_filter|urlencode }}{% endif %}">
+                    <img class="thumb" src="{{ item.image_url }}" alt="{{ item.name }}" onerror="this.onerror=null;this.src='/static/core/images/farmer.svg';">
+                    <strong>{{ item.name }}</strong>
+                    <span class="tamil-helper">{{ item.tamil_name|default:item.name }}</span>
+                    <div class="meta-row">
+                        <span>{{ item.count }} markets</span>
+                        <span>Avg Rs. {{ item.avg_price|floatformat:2 }}/kg</span>
+                    </div>
+                    <div class="info-strip">
+                        <div>
+                            <strong>Min</strong>
+                            <p class="muted">Rs. {{ item.min_price|floatformat:2 }}</p>
+                        </div>
+                        <div>
+                            <strong>Max</strong>
+                            <p class="muted">Rs. {{ item.max_price|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <span class="button secondary">View prices by place</span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination-bar">
+                {% if page_obj.has_previous %}
+                    <a class="button secondary" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if location_filter %}&location={{ location_filter|urlencode }}{% endif %}">Previous</a>
+                {% endif %}
+                <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a class="button secondary" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if location_filter %}&location={{ location_filter|urlencode }}{% endif %}">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="empty-state">No commodities found for the selected filters.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card dashboard-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Warehouse Bookings</span>
+            <h1>My Warehouse Bookings</h1>
+            <p>Review your confirmed slots, booking status, and quick cancel or delete actions.</p>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="/static/core/images/warehouse.svg" alt="">
+            <img src="/static/core/images/farmer.svg" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="grid">
+    {% if bookings %}
+        {% for booking in bookings %}
+            <article class="card dashboard-panel">
+                <div class="section-title">
+                    <h2>{{ booking.warehouse.name_en }}</h2>
+                    <span class="badge {% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% else %}danger{% endif %}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+                <div class="info-strip compact-strip">
+                    <div>
+                        <strong>Crop</strong>
+                        <p class="muted">{{ booking.crop_name }}</p>
+                    </div>
+                    <div>
+                        <strong>Quantity</strong>
+                        <p class="muted">{{ booking.quantity_tons }} tons</p>
+                    </div>
+                    <div>
+                        <strong>Date and Slot</strong>
+                        <p class="muted">{{ booking.booking_date }} | {{ booking.get_booking_slot_display }}</p>
+                    </div>
+                </div>
+                <div class="actions">
+                    {% if booking.status != 'cancelled' %}
+                        <form action="{% url 'cancel-warehouse-booking' booking.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="button secondary compact-button">Cancel Booking</button>
+                        </form>
+                    {% endif %}
+                    <form action="{% url 'delete-warehouse-booking' booking.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="button secondary compact-button">Delete Booking</button>
+                    </form>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <p class="empty-state">You do not have any warehouse bookings yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

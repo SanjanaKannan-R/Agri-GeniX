@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card dashboard-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Warehouse Operations</span>
+            <h1>Warehouse Booking Dashboard</h1>
+            <p>Manage your warehouse records, monitor capacity, and review recent farmer bookings from one organized screen.</p>
+            <div class="actions">
+                <a class="button" href="{% url 'add-warehouse' %}">Add Warehouse</a>
+                <a class="button secondary" href="{% url 'warehouse-portal' %}">Back to Portal Home</a>
+            </div>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Warehouse%20Building.jpg" alt="">
+            <img src="/static/core/images/farmer.svg" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card dashboard-panel">
+        <div class="section-title">
+            <h2>Your Warehouses</h2>
+        </div>
+        {% for warehouse in warehouses %}
+            <div class="list-card compact-list-card">
+                <strong>{{ warehouse.name_en }}</strong>
+                <div class="meta-row">
+                    <span>{{ warehouse.district }}</span>
+                    <span>{{ warehouse.available_tons }} / {{ warehouse.capacity_tons }} tons free</span>
+                </div>
+                {% if warehouse.contact_number %}
+                    <span class="muted">{{ warehouse.contact_number }}</span>
+                {% endif %}
+                <a class="button secondary compact-button" href="{% url 'edit-warehouse' warehouse.id %}">Update Data</a>
+            </div>
+        {% empty %}
+            <p class="empty-state">No warehouses added yet.</p>
+        {% endfor %}
+    </div>
+
+    <div class="card dashboard-panel">
+        <div class="section-title">
+            <h2>Recent Farmer Bookings</h2>
+        </div>
+        {% for booking in bookings %}
+            <div class="list-card compact-list-card">
+                <strong>{{ booking.crop_name }}</strong>
+                <div class="meta-row">
+                    <span>{{ booking.warehouse.name_en }}</span>
+                    <span>{{ booking.quantity_tons }} tons</span>
+                    <span>{{ booking.get_booking_slot_display }}</span>
+                </div>
+                <span>{{ booking.farmer.username }}</span>
+                <span class="muted">{{ booking.status|title }} on {{ booking.booking_date }}</span>
+            </div>
+        {% empty %}
+            <p class="empty-state">No bookings yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

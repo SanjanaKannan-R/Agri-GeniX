@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Advanced Marketplace - Agri Genix{% endblock %}
+{% block content %}
+<div class="container-fluid mt-4 mb-5">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="needs-validation">
+                        <div class="mb-3">
+                            <label for="{{ form.search_query.id_for_label }}" class="form-label">Search</label>
+                            {{ form.search_query }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    {{ form.min_price }}
+                                </div>
+                                <div class="col-6">
+                                    {{ form.max_price }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="form-label">Location</label>
+                            {{ form.location }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.unit.id_for_label }}" class="form-label">Unit</label>
+                            {{ form.unit }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date Range</label>
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <small class="text-muted">From</small>
+                                    {{ form.date_from }}
+                                </div>
+                            </div>
+                            <div class="row g-2 mt-2">
+                                <div class="col-12">
+                                    <small class="text-muted">To</small>
+                                    {{ form.date_to }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.sort_by.id_for_label }}" class="form-label">Sort By</label>
+                            {{ form.sort_by }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        <a href="{% url 'advanced-marketplace' %}" class="btn btn-secondary w-100 mt-2">Clear Filters</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Crop Listings <span class="badge bg-info">{{ results_count }}</span></h3>
+            </div>
+
+            {% if crops %}
+                <div class="row">
+                    {% for crop in crops %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="mb-3 text-center">
+                                        <img class="thumb" src="{{ crop.image_url|default:'/static/core/images/farmer.svg' }}" alt="{{ crop.image_hint|default:crop.crop_name }}" onerror="this.onerror=null;this.src='/static/core/images/farmer.svg';">
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="card-title mb-1">{{ crop.crop_name }}</h5>
+                                            <small class="text-muted">{{ crop.location }}</small>
+                                        </div>
+                                        <span class="badge bg-success">{{ crop.quantity }} {{ crop.unit }}</span>
+                                    </div>
+                                    
+                                    {% if crop.description %}
+                                        <p class="card-text small text-muted">{{ crop.description|truncatewords:15 }}</p>
+                                    {% endif %}
+
+                                    <div class="mb-3">
+                                        <p class="mb-1">
+                                            <strong>₹{{ crop.expected_price }}/{{ crop.unit }}</strong>
+                                        </p>
+                                        <small class="text-muted">Listed by: {{ crop.farmer.get_full_name|default:crop.farmer.phone }}</small>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'buy-crop' crop.id %}" class="btn btn-sm btn-success">Make Offer</a>
+                                        <a href="{% url 'view-reviews-user' crop.farmer.id %}" class="btn btn-sm btn-outline-secondary">Reviews</a>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-muted small">
+                                    Listed {{ crop.created_at|date:"M d, Y" }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if market_data %}
+                    <hr class="my-5">
+                    <h4 class="mb-3">Market Rate Reference</h4>
+                    <div class="row">
+                        {% for item in market_data %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <div class="mb-2 text-center">
+                                            <img class="thumb" src="{{ item.image_url|default:'/static/core/images/farmer.svg' }}" alt="{{ item.image_hint|default:item.crop_name }}" onerror="this.onerror=null;this.src='/static/core/images/farmer.svg';">
+                                        </div>
+                                        <h6 class="card-title">{{ item.crop_name }}</h6>
+                                        <p class="mb-1"><strong>₹{{ item.expected_price }}/{{ item.unit }}</strong></p>
+                                        <small class="text-muted">{{ item.location }} - {{ item.updated }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    No crops found matching your filters. Try adjusting your search criteria.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border-color: #ddd;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+</style>
+{% endblock %}

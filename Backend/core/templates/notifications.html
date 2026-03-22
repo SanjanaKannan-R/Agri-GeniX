@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card dashboard-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Notifications</span>
+            <h1>Your Notifications</h1>
+            <p>Track important updates from bookings, purchases, reviews, and SMS activity.</p>
+            {% if unread_count > 0 %}
+                <span class="badge danger">{{ unread_count }} Unread</span>
+            {% endif %}
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="/static/core/images/agrigenix-logo.svg" alt="">
+            <img src="/static/core/images/farmer.svg" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="grid">
+    {% if notifications %}
+        {% for notification in notifications %}
+            <article class="card dashboard-panel">
+                <div class="section-title">
+                    <h2>{{ notification.title }}</h2>
+                    <span class="badge {% if notification.notification_type == 'booking' %}success{% elif notification.notification_type == 'purchase' %}warning{% else %}danger{% endif %}">
+                        {{ notification.notification_type|title }}
+                    </span>
+                </div>
+                <p>{{ notification.message }}</p>
+                <div class="meta-row">
+                    <span>{{ notification.created_at|date:"d M Y h:i A" }}</span>
+                    {% if notification.is_sent_sms %}
+                        <span>SMS sent</span>
+                    {% endif %}
+                    {% if not notification.is_read %}
+                        <span>New</span>
+                    {% endif %}
+                </div>
+                {% if notification.related_booking %}
+                    <p class="muted">Booking: {{ notification.related_booking.crop_name }} - {{ notification.related_booking.warehouse.name_en }}</p>
+                {% endif %}
+                {% if notification.related_purchase %}
+                    <p class="muted">Purchase request: {{ notification.related_purchase.crop.crop_name }} - {{ notification.related_purchase.requested_quantity }} {{ notification.related_purchase.crop.unit }}</p>
+                {% endif %}
+                <div class="actions">
+                    {% if not notification.is_read %}
+                        <a class="button secondary compact-button" href="?read={{ notification.id }}">Mark as Read</a>
+                    {% endif %}
+                    <form action="{% url 'delete-notification' notification.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="button secondary compact-button">Delete</button>
+                    </form>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <p class="empty-state">No notifications yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

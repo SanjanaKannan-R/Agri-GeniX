@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card hero-card detail-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">{{ ui.add_crop }}</span>
+            <h1>{% if crop %}Update Crop{% else %}{{ ui.add_crop }}{% endif %}</h1>
+            <p class="muted">Create or update crop details in a clearer form layout for sale listings.</p>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="/static/core/images/tomato.svg" alt="">
+            <img src="/static/core/images/paddy.svg" alt="">
+        </div>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="form-card detail-form-card">
+        {% csrf_token %}
+        {% if crop and crop.image %}
+            <div class="media-preview">
+                <img class="thumb large" src="{{ crop.image.url }}" alt="{{ crop.crop_name }}">
+            </div>
+        {% endif %}
+        {{ form.as_p }}
+        <button class="button block" type="submit">{% if crop %}Update Crop{% else %}{{ ui.add_crop }}{% endif %}</button>
+    </form>
+</section>
+{% endblock %}

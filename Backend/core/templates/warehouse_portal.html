@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card dashboard-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Warehouse Workspace</span>
+            <h1>Warehouse Owner Portal</h1>
+            <p>Monitor warehouse records, total capacity, and booking operations from a cleaner control panel.</p>
+            <div class="actions">
+                <a class="button" href="{% url 'add-warehouse' %}">Add Warehouse Data</a>
+                <a class="button secondary" href="{% url 'warehouse-bookings-dashboard' %}">Bookings Dashboard</a>
+            </div>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Warehouse%20Building.jpg" alt="">
+            <img src="/static/core/images/coconut.svg" alt="">
+        </div>
+    </div>
+</section>
+
+<section class="stat-grid dashboard-kpis">
+    <article class="card mini-stat">
+        <span class="muted">Managed Warehouses</span>
+        <strong>{{ warehouses_count }}</strong>
+        <span>Warehouse records owned by you</span>
+    </article>
+    <article class="card mini-stat">
+        <span class="muted">Total Bookings</span>
+        <strong>{{ bookings_count }}</strong>
+        <span>Bookings linked to your facilities</span>
+    </article>
+    <article class="card mini-stat">
+        <span class="muted">Available Capacity</span>
+        <strong>{{ available_capacity }}</strong>
+        <span>Total free tons across your warehouses</span>
+    </article>
+</section>
+
+<section class="grid two">
+    <div class="card dashboard-panel">
+        <div class="section-title">
+            <h2>Owner Summary</h2>
+        </div>
+        <div class="info-strip compact-strip">
+            <div>
+                <strong>Managed Warehouses</strong>
+                <p class="muted">{{ warehouses_count }}</p>
+            </div>
+            <div>
+                <strong>Total Bookings</strong>
+                <p class="muted">{{ bookings_count }}</p>
+            </div>
+            <div>
+                <strong>Free Capacity</strong>
+                <p class="muted">{{ available_capacity }} tons</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card dashboard-panel">
+        <div class="section-title">
+            <h2>Open Dashboards</h2>
+        </div>
+        <div class="actions">
+            <a class="button block" href="{% url 'warehouse-bookings-dashboard' %}">Open Booking Dashboard</a>
+            <a class="button secondary block" href="{% url 'notifications' %}">Open Notifications</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

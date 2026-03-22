@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card detail-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Warehouse</span>
+            <h1>{% if warehouse %}Update Warehouse Data{% else %}Add Warehouse Data{% endif %}</h1>
+            <p class="muted">Create and update warehouse records in a cleaner management screen.</p>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Warehouse%20Building.jpg" alt="">
+            <img src="/static/core/images/coconut.svg" alt="">
+        </div>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="form-card detail-form-card">
+        {% csrf_token %}
+        {% if warehouse and warehouse.image %}
+            <div class="media-preview">
+                <img class="thumb large" src="{{ warehouse.image.url }}" alt="{{ warehouse.name_en }}">
+            </div>
+        {% endif %}
+        {{ form.as_p }}
+        <button class="button block" type="submit">Save Warehouse Data</button>
+    </form>
+</section>
+
+<section class="card dashboard-panel">
+    <div class="section-title">
+        <h2>Your Existing Warehouse Details</h2>
+    </div>
+    {% if owned_warehouses %}
+        <div class="grid two">
+            {% for item in owned_warehouses %}
+                <div class="list-card compact-list-card">
+                    {% if item.image %}
+                        <img class="thumb" src="{{ item.image.url }}" alt="{{ item.name_en }}">
+                    {% else %}
+                        <img class="thumb" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Warehouse%20Building.jpg" alt="{{ item.name_en }}">
+                    {% endif %}
+                    <strong>{{ item.name_en }}</strong>
+                    <span class="tamil-helper">{{ item.scheme_name|default:"Private Warehouse" }}</span>
+                    <div class="meta-row">
+                        <span>{{ item.district }}</span>
+                        <span>{{ item.available_tons }} / {{ item.capacity_tons }} tons</span>
+                    </div>
+                    {% if item.contact_number %}
+                        <span class="muted">{{ item.contact_number }}</span>
+                    {% endif %}
+                    <a class="button secondary compact-button" href="{% url 'edit-warehouse' item.id %}">Edit Details</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">No warehouse details added yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card detail-hero">
+    <div class="login-hero-grid">
+        <div>
+            <span class="eyebrow">Buyer Request</span>
+            <h1>Buy Crop</h1>
+            <p>Review the crop details and send a direct request to the farmer with the quantity you need.</p>
+        </div>
+        <div class="login-art-panel" aria-hidden="true">
+            <img src="{{ crop.image_url|default:'/static/core/images/farmer.svg' }}" alt="">
+            <img src="/static/core/images/banana.svg" alt="">
+        </div>
+    </div>
+    <div class="grid two">
+        <article class="list-card large crop-showcase compact-list-card">
+            <img class="thumb" src="{{ crop.image_url|default:'/static/core/images/farmer.svg' }}" alt="{{ crop.crop_name }}" onerror="this.onerror=null;this.src='/static/core/images/farmer.svg';">
+            <strong>{{ crop.crop_name }}</strong>
+            <span class="tamil-helper">{{ crop.location }}</span>
+            <div class="meta-row">
+                <span>{{ crop.quantity }} {{ crop.unit }}</span>
+                <span>Rs. {{ crop.expected_price }}/{{ crop.unit }}</span>
+            </div>
+            {% if crop.description %}
+                <p>{{ crop.description }}</p>
+            {% endif %}
+        </article>
+        <article class="card dashboard-panel">
+            <div class="section-title">
+                <h2>Request Details</h2>
+            </div>
+            <p class="muted">Enter your required quantity and send the farmer a purchase request.</p>
+            <form method="post" class="form-card detail-form-card">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="button block" type="submit">Send Buy Request</button>
+            </form>
+        </article>
+    </div>
+</section>
+{% endblock %}

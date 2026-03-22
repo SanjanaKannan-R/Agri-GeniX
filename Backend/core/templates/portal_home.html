@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card portal-entry-card">
+    <span class="eyebrow">Agri Genix</span>
+    <h1>Choose Your Portal</h1>
+    <p>Select the workspace you want to open.</p>
+</section>
+
+<section class="portal-grid portal-entry-grid">
+    {% for portal in portals %}
+        <div class="card portal-card portal-choice-card">
+            <span class="eyebrow">{{ portal.eyebrow }}</span>
+            <h2>{{ portal.title }}</h2>
+            <p>{{ portal.description }}</p>
+            <a class="button block" href="{{ portal.login_url }}">
+                {% if request.user.is_authenticated and request.user.role == portal.role %}
+                    Open {{ portal.eyebrow }} Portal
+                {% else %}
+                    Continue to {{ portal.eyebrow }}
+                {% endif %}
+            </a>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}

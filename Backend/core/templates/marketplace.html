@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card human-hero">
+    <span class="eyebrow">{{ ui.marketplace }}</span>
+    <h1>{{ ui.buyer_market }}</h1>
+    <p class="lead-copy">
+        {% if language_code == 'ta' %}
+            விலை, அளவு, மற்றும் இட விவரங்களுடன் பயிர் பதிவுகளை தெளிவாக பார்க்கலாம்.
+        {% else %}
+            Browse crop listings with clear details on price, quantity, and location.
+        {% endif %}
+    </p>
+
+    <div class="human-note">
+        <strong>{% if language_code == 'ta' %}தேடல்{% else %}Search{% endif %}</strong>
+        <span>{% if language_code == 'ta' %}பயிர் பெயர் அல்லது இடத்தை தட்டச்சு செய்து அல்லது குரலில் தேடலாம்.{% else %}Find listings by crop name or location using text or voice.{% endif %}</span>
+    </div>
+
+    <div class="voice-panel">
+        <strong>{% if language_code == 'ta' %}குரல் தேடல்{% else %}Voice search{% endif %}</strong>
+        <span>{% if language_code == 'ta' %}பயிர் அல்லது மாவட்ட பெயரை சொல்லி விரைவாக தேடலாம்.{% else %}Say a crop or district name to search quickly.{% endif %}</span>
+    </div>
+
+    <div class="tool-row">
+        <input
+            type="text"
+            placeholder="{% if language_code == 'ta' %}பயிர் அல்லது இடம் தேடுங்கள்{% else %}Search crop or location{% endif %}"
+            data-voice-search-input
+            data-live-query
+        >
+        <button class="button secondary" type="button" data-voice-search">
+            {% if language_code == "ta" %}குரல் தேடல்{% else %}Voice Search{% endif %}
+        </button>
+    </div>
+
+    <p class="live-note">
+        {% if language_code == "ta" %}புதுப்பிப்பு நேரம்:{% else %}Last refresh:{% endif %}
+        <span data-live-updated>--</span>
+    </p>
+</section>
+
+<section class="grid two" data-live-market data-api-url="{% url 'live-market' %}">
+    {% for crop in crops %}
+        <article class="list-card large crop-card human-card">
+            <img class="thumb" src="{{ crop.image_url }}" alt="{{ crop.image_hint|default:crop.crop_name }}" onerror="this.onerror=null;this.src='/static/core/images/farmer.svg';">
+            <strong>{{ crop.crop_name }}</strong>
+            <span class="tamil-helper">{{ crop.tamil_name|default:crop.crop_name }}</span>
+            <div class="meta-row">
+                <span>{{ crop.quantity }} {{ crop.unit }}</span>
+                <span>{{ crop.location }}</span>
+            </div>
+            <div class="price-row">
+                <span class="price-main">Rs. {{ crop.expected_price }}/kg</span>
+                <span class="price-badge {{ crop.price_band_key }}">{{ crop.price_band }}</span>
+            </div>
+            <span>{{ crop.contact }}</span>
+            {% if crop.description %}
+                <p>{{ crop.description }}</p>
+            {% endif %}
+            {% if request.user.is_authenticated and request.user.role == 'buyer' and crop.contact %}
+                {% if crop.contact and '@' in crop.contact %}
+                    <a class="button secondary" href="mailto:{{ crop.contact }}">{% if language_code == 'ta' %}விவசாயியை தொடர்புகொள்{% else %}Contact Farmer{% endif %}</a>
+                {% else %}
+                    <a class="button secondary" href="tel:{{ crop.contact }}">{% if language_code == 'ta' %}விவசாயியை தொடர்புகொள்{% else %}Contact Farmer{% endif %}</a>
+                {% endif %}
+            {% endif %}
+            {% if request.user.is_authenticated and request.user.role == 'buyer' and crop.id %}
+                <a class="button secondary" href="{% url 'buy-crop' crop.id %}">{% if language_code == 'ta' %}பயிரை வாங்கு{% else %}Buy Crop{% endif %}</a>
+            {% endif %}
+        </article>
+    {% empty %}
+        <p class="empty-state">{% if language_code == 'ta' %}இப்போது பயிர் பதிவுகள் இல்லை.{% else %}No crop listings are available right now.{% endif %}</p>
+    {% endfor %}
+</section>
+{% endblock %}

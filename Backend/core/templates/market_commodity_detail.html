@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card hero-card">
+    <span class="eyebrow">Commodity Prices</span>
+    <h1>{{ commodity_name }}</h1>
+    <p>
+        Compare all {{ commodity_name }} prices by market/place.
+        {% if commodity_tamil_name %}<span class="muted">{{ commodity_tamil_name }}</span>{% endif %}
+    </p>
+    <div class="actions">
+        <a class="button secondary" href="{% url 'market-dashboard' %}?{% if list_page %}page={{ list_page }}&{% endif %}{% if location_filter %}location={{ location_filter|urlencode }}&{% endif %}q={{ commodity_name|urlencode }}">Back to commodity list</a>
+    </div>
+</section>
+
+<section class="card form-card">
+    <form method="get">
+        {% if list_page %}
+            <input type="hidden" name="list_page" value="{{ list_page }}">
+        {% endif %}
+        <div class="grid two">
+            <div>
+                <label for="id_location">Filter by Place</label>
+                <input id="id_location" type="text" name="location" value="{{ location_filter }}" placeholder="District or market name">
+            </div>
+            <div>
+                <label>Rows</label>
+                <input type="text" value="10 per page" readonly>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="button" type="submit">Apply Filter</button>
+            <a class="button secondary" href="{% url 'market-commodity-detail' commodity_name %}?{% if list_page %}list_page={{ list_page }}{% endif %}">Reset</a>
+        </div>
+    </form>
+</section>
+
+<section class="card">
+    <div class="section-title">
+        <h2>{{ commodity_name }} by Place</h2>
+        <span class="muted">{{ total_rows }} total price rows</span>
+    </div>
+
+    {% if commodity_items %}
+        <div class="grid two">
+            {% for item in commodity_items %}
+                <article class="list-card large crop-card">
+                    <img class="thumb" src="{{ commodity_image }}" alt="{{ commodity_name }}" onerror="this.onerror=null;this.src='/static/core/images/farmer.svg';">
+                    <strong>{{ item.location }}</strong>
+                    <span class="tamil-helper">{{ item.market|default:item.location }}</span>
+                    <div class="price-row">
+                        <span class="price-main">Rs. {{ item.expected_price|floatformat:2 }}/{{ item.unit|default:"kg" }}</span>
+                        <span class="price-badge {{ item.price_band_key|default:'medium' }}">{{ item.price_band|default:'Medium' }}</span>
+                    </div>
+                    {% if item.description %}
+                        <p>{{ item.description }}</p>
+                    {% endif %}
+                    {% if item.contact %}
+                        <span class="muted">{{ item.contact }}</span>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination-bar">
+                {% if page_obj.has_previous %}
+                    <a class="button secondary" href="?page={{ page_obj.previous_page_number }}{% if location_filter %}&location={{ location_filter|urlencode }}{% endif %}{% if list_page %}&list_page={{ list_page }}{% endif %}">Previous</a>
+                {% endif %}
+                <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a class="button secondary" href="?page={{ page_obj.next_page_number }}{% if location_filter %}&location={{ location_filter|urlencode }}{% endif %}{% if list_page %}&list_page={{ list_page }}{% endif %}">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="empty-state">No {{ commodity_name }} price rows found for the selected place filter.</p>
+    {% endif %}
+</section>
+{% endblock %}
